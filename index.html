@@ -59,9 +59,11 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     let leakNode = 0;
-const svg = d3.select("svg");
+// // const svg = d3.select("svg"); // Moved to top — removed duplicate
 
 function drawGraph(size) {
+  svg.selectAll("*").remove();
+  addDefs();
   svg.selectAll("*").remove();
 
   const nodes = Array.from({ length: size }, (_, i) => ({ id: i, label: (i + 1).toString() }));
@@ -72,41 +74,7 @@ function drawGraph(size) {
 
   // Redraw everything based on nodes and links
   // Reinsert marker defs
-  svg.append("defs").append("marker")
-    .attr("id", "link-arrow")
-    .attr("viewBox", "0 0 10 10")
-    .attr("refX", 10)
-    .attr("refY", 5)
-    .attr("markerWidth", 6)
-    .attr("markerHeight", 6)
-    .attr("orient", "auto")
-    .append("path")
-    .attr("d", "M 0 0 L 10 5 L 0 10 z")
-    .attr("fill", "gray");
-
-  svg.append("defs").append("marker")
-    .attr("id", "leak-arrow")
-    .attr("viewBox", "0 0 10 10")
-    .attr("refX", 10)
-    .attr("refY", 5)
-    .attr("markerWidth", 6)
-    .attr("markerHeight", 6)
-    .attr("orient", "auto")
-    .append("path")
-    .attr("d", "M 0 0 L 10 5 L 0 10 z")
-    .attr("fill", "red");
-
-  svg.append("defs").append("marker")
-    .attr("id", "arrow")
-    .attr("viewBox", "0 0 10 10")
-    .attr("refX", 10)
-    .attr("refY", 5)
-    .attr("markerWidth", 6)
-    .attr("markerHeight", 6)
-    .attr("orient", "auto")
-    .append("path")
-    .attr("d", "M 0 0 L 10 5 L 0 10 z")
-    .attr("fill", "black");
+  // Removed duplicate arrowhead marker definitions (already handled in drawGraph)
 
   const nodeGroup = svg.selectAll("g.node")
     .data(nodes)
@@ -196,6 +164,7 @@ function drawGraph(size) {
 }
 
     let leakNode = 0; // Initial leak location
+const svg = d3.select("svg");
 
     const eqLookup = {
   2: {
@@ -218,41 +187,45 @@ function drawGraph(size) {
     const svg = d3.select("svg");
 
     // Define arrowhead marker for links and leak
-    svg.append("defs").append("marker")
-      .attr("id", "link-arrow")
-      .attr("viewBox", "0 0 10 10")
-      .attr("refX", 10)
-      .attr("refY", 5)
-      .attr("markerWidth", 6)
-      .attr("markerHeight", 6)
-      .attr("orient", "auto")
-      .append("path")
-      .attr("d", "M 0 0 L 10 5 L 0 10 z")
-      .attr("fill", "gray");
+    function addDefs() {
+  svg.append("defs").append("marker")
+    .attr("id", "link-arrow")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 10)
+    .attr("refY", 5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z")
+    .attr("fill", "gray");
 
-    svg.append("defs").append("marker")
-      .attr("id", "leak-arrow")
-      .attr("viewBox", "0 0 10 10")
-      .attr("refX", 10)
-      .attr("refY", 5)
-      .attr("markerWidth", 6)
-      .attr("markerHeight", 6)
-      .attr("orient", "auto")
-      .append("path")
-      .attr("d", "M 0 0 L 10 5 L 0 10 z")
-      .attr("fill", "red");
+  svg.append("defs").append("marker")
+    .attr("id", "leak-arrow")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 10)
+    .attr("refY", 5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z")
+    .attr("fill", "red");
 
-    svg.append("defs").append("marker")
-      .attr("id", "arrow")
-      .attr("viewBox", "0 0 10 10")
-      .attr("refX", 10)
-      .attr("refY", 5)
-      .attr("markerWidth", 6)
-      .attr("markerHeight", 6)
-      .attr("orient", "auto-start-reverse")
-      .append("path")
-      .attr("d", "M 0 0 L 10 5 L 0 10 z")
-      .attr("fill", "black");
+  svg.append("defs").append("marker")
+    .attr("id", "arrow")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 10)
+    .attr("refY", 5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto-start-reverse")
+    .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z")
+    .attr("fill", "black");
+}
+
+addDefs();
 
     const size = +document.getElementById("nodeCount").value;
     drawGraph(size);
