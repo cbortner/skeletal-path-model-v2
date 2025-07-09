@@ -64,7 +64,6 @@
 function drawGraph(size) {
   svg.selectAll("*").remove();
   addDefs();
-  svg.selectAll("*").remove();
 
   const nodes = Array.from({ length: size }, (_, i) => ({ id: i, label: (i + 1).toString() }));
   const links = Array.from({ length: size - 1 }, (_, i) => ({ source: i, target: i + 1, label: `a_{${i + 2}${i + 1}}` }));
@@ -168,19 +167,19 @@ const svg = d3.select("svg");
 
     const eqLookup = {
   2: {
-    0: "y''_2 + (\textcolor{red}{a_{01}} + a_{21}) y'_2 + \textcolor{red}{a_{01}} a_{21} y_2 = a_{21} u_1",
-    1: "y''_2 + (\textcolor{red}{a_{02}} + a_{21}) y'_2 + \textcolor{red}{a_{02}} a_{21} y_2 = a_{21} u_1"
+    0: "y''_2 + (\\textcolor{red}{a_{01}} + a_{21}) y'_2 + \\textcolor{red}{a_{01}} a_{21} y_2 = a_{21} u_1",
+    1: "y''_2 + (\\textcolor{red}{a_{02}} + a_{21}) y'_2 + \\textcolor{red}{a_{02}} a_{21} y_2 = a_{21} u_1"
   },
   3: {
-    0: "y^{(3)}_3 + (\textcolor{red}{a_{01}}+a_{21}+a_{32}) y''_3 + (\textcolor{red}{a_{01}}a_{32}+a_{21}a_{32}) y'_3 + \textcolor{red}{a_{01}}a_{21}a_{32} y_3 = a_{21}a_{32} u_1",
-    1: "y^{(3)}_3 + (\textcolor{red}{a_{02}}+a_{21}+a_{32}) y''_3 + (\textcolor{red}{a_{02}}a_{21}+a_{21}a_{32}) y'_3 + \textcolor{red}{a_{02}}a_{21}a_{32} y_3 = a_{21}a_{32} u_1",
-    2: "y^{(3)}_3 + (\textcolor{red}{a_{03}}+a_{21}+a_{32}) y''_3 + (\textcolor{red}{a_{03}}a_{21}+\textcolor{red}{a_{03}}a_{32}) y'_3 + \textcolor{red}{a_{03}}a_{21}a_{32} y_3 = a_{21}a_{32} u_1"
+    0: "y^{(3)}_3 + (\\textcolor{red}{a_{01}}+a_{21}+a_{32}) y''_3 + (\\textcolor{red}{a_{01}}a_{32}+a_{21}a_{32}) y'_3 + \\textcolor{red}{a_{01}}a_{21}a_{32} y_3 = a_{21}a_{32} u_1",
+    1: "y^{(3)}_3 + (\\textcolor{red}{a_{02}}+a_{21}+a_{32}) y''_3 + (\\textcolor{red}{a_{02}}a_{21}+a_{21}a_{32}) y'_3 + \\textcolor{red}{a_{02}}a_{21}a_{32} y_3 = a_{21}a_{32} u_1",
+    2: "y^{(3)}_3 + (\\textcolor{red}{a_{03}}+a_{21}+a_{32}) y''_3 + (\\textcolor{red}{a_{03}}a_{21}+\textcolor{red}{a_{03}}a_{32}) y'_3 + \\textcolor{red}{a_{03}}a_{21}a_{32} y_3 = a_{21}a_{32} u_1"
   },
   4: {
-    0: "y^{(4)}_4 + (\textcolor{red}{a_{01}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\textcolor{red}{a_{01}}a_{32}+\textcolor{red}{a_{01}}a_{43}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (\textcolor{red}{a_{01}}a_{32}a_{43}+a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1",
-    1: "y^{(4)}_4 + (\textcolor{red}{a_{02}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\textcolor{red}{a_{02}}a_{21}+\textcolor{red}{a_{02}}a_{43}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (\textcolor{red}{a_{02}}a_{21}a_{43}+a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1",
-    2: "y^{(4)}_4 + (\textcolor{red}{a_{03}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\textcolor{red}{a_{03}}a_{21}+\textcolor{red}{a_{03}}a_{32}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (\textcolor{red}{a_{03}}a_{21}a_{32}+a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1",
-    3: "y^{(4)}_4 + (\textcolor{red}{a_{04}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\textcolor{red}{a_{04}}a_{21}+\textcolor{red}{a_{04}}a_{32}+\textcolor{red}{a_{04}}a_{43}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1"
+    0: "y^{(4)}_4 + (\\textcolor{red}{a_{01}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\\textcolor{red}{a_{01}}a_{32}+\\textcolor{red}{a_{01}}a_{43}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (\\textcolor{red}{a_{01}}a_{32}a_{43}+a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1",
+    1: "y^{(4)}_4 + (\\textcolor{red}{a_{02}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\\textcolor{red}{a_{02}}a_{21}+\\textcolor{red}{a_{02}}a_{43}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (\\textcolor{red}{a_{02}}a_{21}a_{43}+a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1",
+    2: "y^{(4)}_4 + (\\textcolor{red}{a_{03}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\\textcolor{red}{a_{03}}a_{21}+\\textcolor{red}{a_{03}}a_{32}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (\\textcolor{red}{a_{03}}a_{21}a_{32}+a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1",
+    3: "y^{(4)}_4 + (\\textcolor{red}{a_{04}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\\textcolor{red}{a_{04}}a_{21}+\\textcolor{red}{a_{04}}a_{32}+\\textcolor{red}{a_{04}}a_{43}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1"
   }
 };
 
