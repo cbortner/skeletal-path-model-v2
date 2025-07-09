@@ -65,6 +65,10 @@ const svg = d3.select("svg");
 function drawGraph(size) {
   const nodes = Array.from({ length: size }, (_, i) => ({ id: i, label: (i + 1).toString() }));
   const links = Array.from({ length: size - 1 }, (_, i) => ({ source: i, target: i + 1, label: `a_{${i + 2}${i + 1}}` }));
+  window.nodes = nodes;
+  window.links = links;
+}, (_, i) => ({ id: i, label: (i + 1).toString() }));
+  const links = Array.from({ length: size - 1 }, (_, i) => ({ source: i, target: i + 1, label: `a_{${i + 2}${i + 1}}` }));
 
   // Add your drawing logic here (re-append nodes, links, arrows, etc.)
   // For now, just store these for use in the rest of the code block.
@@ -130,6 +134,8 @@ function drawGraph(size) {
       .append("path")
       .attr("d", "M 0 0 L 10 5 L 0 10 z")
       .attr("fill", "black");
+
+    drawGraph(+document.getElementById("nodeCount").value);
 
     const nodeGroup = svg.selectAll("g.node")
       .data(nodes)
