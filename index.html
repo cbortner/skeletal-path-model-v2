@@ -63,17 +63,137 @@
 const svg = d3.select("svg");
 
 function drawGraph(size) {
+  svg.selectAll("*").remove();
+
   const nodes = Array.from({ length: size }, (_, i) => ({ id: i, label: (i + 1).toString() }));
   const links = Array.from({ length: size - 1 }, (_, i) => ({ source: i, target: i + 1, label: `a_{${i + 2}${i + 1}}` }));
+
   window.nodes = nodes;
   window.links = links;
-}, (_, i) => ({ id: i, label: (i + 1).toString() }));
-  const links = Array.from({ length: size - 1 }, (_, i) => ({ source: i, target: i + 1, label: `a_{${i + 2}${i + 1}}` }));
 
-  // Add your drawing logic here (re-append nodes, links, arrows, etc.)
-  // For now, just store these for use in the rest of the code block.
-  window.currentNodes = nodes;
-  window.currentLinks = links;
+  // Redraw everything based on nodes and links
+  // Reinsert marker defs
+  svg.append("defs").append("marker")
+    .attr("id", "link-arrow")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 10)
+    .attr("refY", 5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z")
+    .attr("fill", "gray");
+
+  svg.append("defs").append("marker")
+    .attr("id", "leak-arrow")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 10)
+    .attr("refY", 5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z")
+    .attr("fill", "red");
+
+  svg.append("defs").append("marker")
+    .attr("id", "arrow")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 10)
+    .attr("refY", 5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z")
+    .attr("fill", "black");
+
+  const nodeGroup = svg.selectAll("g.node")
+    .data(nodes)
+    .enter()
+    .append("g")
+    .attr("class", "node")
+    .attr("transform", (d, i) => `translate(${100 + i * 120}, 75)`)
+    .on("click", (event, d) => {
+      leakNode = d.id;
+      drawLeak();
+      updateEquation();
+    });
+
+  nodeGroup.append("circle").attr("r", 25);
+  nodeGroup.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dy", 5)
+    .text(d => d.label);
+
+  svg.selectAll("line.link")
+    .data(links)
+    .enter()
+    .append("line")
+    .attr("class", "link")
+    .attr("stroke", "gray")
+    .attr("stroke-width", 2)
+    .attr("x1", d => 100 + d.source * 120 + 25)
+    .attr("y1", 75)
+    .attr("x2", d => 100 + d.target * 120 - 25)
+    .attr("y2", 75)
+    .attr("marker-end", "url(#link-arrow)");
+
+  svg.selectAll(".edge-label")
+    .data(links)
+    .enter()
+    .append("foreignObject")
+    .attr("x", d => 100 + (d.source + 0.5) * 120 - 20)
+    .attr("y", 45)
+    .attr("width", 40)
+    .attr("height", 30)
+    .append("xhtml:div")
+    .style("text-align", "center")
+    .style("font-size", "14px")
+    .each(function(d) {
+      katex.render(d.label, this, { throwOnError: false });
+    });
+
+  // Input arrow
+  svg.append("line")
+    .attr("x1", 50)
+    .attr("y1", 45)
+    .attr("x2", 75)
+    .attr("y2", 70)
+    .attr("stroke", "black")
+    .attr("stroke-width", 3)
+    .attr("marker-end", "url(#arrow)");
+
+  svg.append("text")
+    .attr("x", 40)
+    .attr("y", 40)
+    .attr("text-anchor", "start")
+    .attr("fill", "black")
+    .text("in");
+
+  // Output arrow
+  const lastX = 100 + (size - 1) * 120;
+  svg.append("line")
+    .attr("x1", lastX + 25)
+    .attr("y1", 75)
+    .attr("x2", lastX + 50)
+    .attr("y2", 50)
+    .attr("stroke", "black")
+    .attr("stroke-width", 3);
+
+  svg.append("circle")
+    .attr("cx", lastX + 50)
+    .attr("cy", 50)
+    .attr("r", 5)
+    .attr("fill", "black");
+
+  svg.append("text")
+    .attr("x", lastX + 60)
+    .attr("y", 45)
+    .attr("text-anchor", "start")
+    .attr("fill", "black")
+    .text("out");
 }
 
     let leakNode = 0; // Initial leak location
