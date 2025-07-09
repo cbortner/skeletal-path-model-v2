@@ -7,8 +7,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js">drawLeak();
     updateEquation();
     function updateModel(n) {
-    document.getElementById("nodeCountLabel").textContent = n;
-    location.reload(); // Simple temporary solution: reload page to reset the static graph to 2, 3, or 4 compartments
+  document.getElementById("nodeCountLabel").textContent = n;
+  const params = new URLSearchParams(window.location.search);
+  params.set("n", n);
+  window.location.search = params.toString(); // Simple temporary solution: reload page to reset the static graph to 2, 3, or 4 compartments
   }
 </script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -53,7 +55,10 @@
   </div>
 
   <script>
-    const size = +document.getElementById("nodeCount").value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const size = +urlParams.get("n") || 4;
+    document.getElementById("nodeCount").value = size;
+    document.getElementById("nodeCountLabel").textContent = size;
 
     const nodes = Array.from({ length: size }, (_, i) => ({ id: i, label: (i + 1).toString() }));
 
