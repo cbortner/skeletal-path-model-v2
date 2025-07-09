@@ -58,8 +58,7 @@
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    let leakNode = 0;
-// // const svg = d3.select("svg"); // Moved to top — removed duplicate
+    // // const svg = d3.select("svg"); // Moved to top — removed duplicate
 
 function drawGraph(size) {
   svg.selectAll("*").remove();
@@ -162,7 +161,7 @@ function drawGraph(size) {
     .text("out");
 }
 
-    let leakNode = 0; // Initial leak location
+    let leakNode = 0;
 const svg = d3.select("svg");
 
     const eqLookup = {
