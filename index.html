@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skeletal Path Model</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js">drawLeak();
+    updateEquation();
+    function updateModel(n) {
+    document.getElementById("nodeCountLabel").textContent = n;
+    location.reload(); // Simple temporary solution: reload page to reset the static graph to 2, 3, or 4 compartments
+  }
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    svg {
+      border: 1px solid #ccc;
+    }
+    .node circle {
+      fill: lightblue;
+      stroke: steelblue;
+      stroke-width: 2px;
+    }
+    .node text {
+      font-size: 14px;
+    }
+    .eq-box {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f4f4f4;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Skeletal Path Model</h2>
+  <label for="nodeCount">Number of Compartments:</label>
+  <input type="range" id="nodeCount" name="nodeCount" min="2" max="4" value="4" oninput="updateModel(this.value)">
+  <span id="nodeCountLabel">4</span>
+  <p>Click a node to move the leak.</p>
+  <div style="width: 100%; overflow-x: auto; display: flex; justify-content: center;">
+    <svg width="100%" height="180" viewBox="20 0 560 180" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+
+  <div class="eq-box">
+    <strong>Input-Output Equation:</strong>
+    <div id="equation"></div>
+  </div>
+
+  <script>
+    const nodes = [
+      { id: 0, label: "1" },
+      { id: 1, label: "2" },
+      { id: 2, label: "3" },
+      { id: 3, label: "4" },
+    ];
+
+    const links = [
+      { source: 0, target: 1, label: "a_{21}" },
+      { source: 1, target: 2, label: "a_{32}" },
+      { source: 2, target: 3, label: "a_{43}" },
+    ];
+
+    let leakNode = 0; // Initial leak location
+
+    const eqLookup = {
+      0: "y^{(4)}_4 + (\\textcolor{red}{a_{01}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\\textcolor{red}{a_{01}}a_{32}+\\textcolor{red}{a_{01}}a_{43}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (\\textcolor{red}{a_{01}}a_{32}a_{43}+a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1",
+      1: "y^{(4)}_4 + (\\textcolor{red}{a_{02}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\\textcolor{red}{a_{02}}a_{21}+\\textcolor{red}{a_{02}}a_{43}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (\\textcolor{red}{a_{02}}a_{21}a_{43}+a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1",
+      2: "y^{(4)}_4 + (\\textcolor{red}{a_{03}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\\textcolor{red}{a_{03}}a_{21}+\\textcolor{red}{a_{03}}a_{32}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (\\textcolor{red}{a_{03}}a_{21}a_{32}+a_{21}a_{32}a_{43}) y'_4 = (a_{21}a_{32}a_{43})u_1",
+      3: "y^{(4)}_4 + (\\textcolor{red}{a_{04}}+a_{21}+a_{32}+a_{43}) y^{(3)}_4 + (\\textcolor{red}{a_{04}}a_{21}+\\textcolor{red}{a_{04}}a_{32}+\\textcolor{red}{a_{04}}a_{43}+a_{21}a_{32}+a_{21}a_{43}+a_{32}a_{43}) y''_4 + (a_{21}a_{32}a_{43}+\\textcolor{red}{a_{04}}a_{32}a_{43}+a_{21}\\textcolor{red}{a_{04}}a_{43}+a_{21}a_{32}\\textcolor{red}{a_{43}}) y'_4 + (\\textcolor{red}{a_{04}})y_4 = (a_{21}a_{32}a_{43})u_1",
+    };
+
+    const svg = d3.select("svg");
+
+    // Define arrowhead marker for links and leak
+    svg.append("defs").append("marker")
+      .attr("id", "link-arrow")
+      .attr("viewBox", "0 0 10 10")
+      .attr("refX", 10)
+      .attr("refY", 5)
+      .attr("markerWidth", 6)
+      .attr("markerHeight", 6)
+      .attr("orient", "auto")
+      .append("path")
+      .attr("d", "M 0 0 L 10 5 L 0 10 z")
+      .attr("fill", "gray");
+
+    svg.append("defs").append("marker")
+      .attr("id", "leak-arrow")
+      .attr("viewBox", "0 0 10 10")
+      .attr("refX", 10)
+      .attr("refY", 5)
+      .attr("markerWidth", 6)
+      .attr("markerHeight", 6)
+      .attr("orient", "auto")
+      .append("path")
+      .attr("d", "M 0 0 L 10 5 L 0 10 z")
+      .attr("fill", "red");
+
+    svg.append("defs").append("marker")
+      .attr("id", "arrow")
+      .attr("viewBox", "0 0 10 10")
+      .attr("refX", 10)
+      .attr("refY", 5)
+      .attr("markerWidth", 6)
+      .attr("markerHeight", 6)
+      .attr("orient", "auto-start-reverse")
+      .append("path")
+      .attr("d", "M 0 0 L 10 5 L 0 10 z")
+      .attr("fill", "black");
+
+    const nodeGroup = svg.selectAll("g.node")
+      .data(nodes)
+      .enter()
+      .append("g")
+      .attr("class", "node")
+      .attr("transform", (d, i) => `translate(${100 + i * 120}, 75)`)
+      .on("click", (event, d) => {
+        leakNode = d.id;
+        drawLeak();
+        updateEquation();
+      });
+
+    nodeGroup.append("circle").attr("r", 25);
+    nodeGroup.append("text")
+      .attr("text-anchor", "middle")
+      .attr("dy", 5)
+      .text(d => d.label);
+
+    svg.selectAll("line.link")
+      .data(links)
+      .enter()
+      .append("line")
+      .attr("class", "link")
+      .attr("stroke", "gray")
+      .attr("stroke-width", 2)
+      .attr("x1", d => 100 + d.source * 120 + 25)  // edge of source circle
+      .attr("y1", 75)
+      .attr("x2", d => 100 + d.target * 120 - 25)  // edge of target circle
+      .attr("y2", 75)
+      .attr("marker-end", "url(#link-arrow)");
+
+    // Edge labels
+    svg.selectAll(".edge-label")
+      .data(links)
+      .enter()
+      .append("foreignObject")
+      .attr("x", d => 100 + (d.source + 0.5) * 120 - 20)
+      .attr("y", 45)
+      .attr("width", 40)
+      .attr("height", 30)
+      .append("xhtml:div")
+      .style("text-align", "center")
+      .style("font-size", "14px")
+      .each(function(d) {
+        katex.render(d.label, this, { throwOnError: false });
+      });
+
+    // Draw input arrow to node 1
+    svg.append("line")
+      .attr("x1", 50)
+      .attr("y1", 45)
+      .attr("x2", 75)
+      .attr("y2", 70)
+      .attr("stroke", "black")
+      .attr("stroke-width", 3)
+      .attr("marker-end", "url(#arrow)");
+
+    svg.append("text")
+      .attr("x", 40)
+      .attr("y", 40)
+      .attr("text-anchor", "start")
+      .attr("fill", "black")
+      .text("in");
+
+    // Draw output line with circle
+    svg.append("line")
+      .attr("x1", 100 + 3 * 120 + 25)
+      .attr("y1", 75)
+      .attr("x2", 100 + 3 * 120 + 50)
+      .attr("y2", 50)
+      .attr("stroke", "black")
+      .attr("stroke-width", 3);
+
+    svg.append("circle")
+      .attr("cx", 100 + 3 * 120 + 50)
+      .attr("cy", 50)
+      .attr("r", 5)
+      .attr("fill", "black");
+
+    svg.append("text")
+      .attr("x", 100 + 3 * 120 + 60)
+      .attr("y", 45)
+      .attr("text-anchor", "start")
+      .attr("fill", "black")
+      .text("out");
+
+    function drawLeak() {
+      svg.selectAll("line.leak-indicator").remove();
+      svg.selectAll(".leak-label").remove();
+
+      svg.append("line")
+        .attr("class", "leak-indicator")
+        .attr("x1", 100 + leakNode * 120)
+        .attr("y1", 100)
+        .attr("x2", 100 + leakNode * 120)
+        .attr("y2", 135)
+        .attr("stroke", "red")
+        .attr("stroke-width", 2)
+        .attr("marker-end", "url(#leak-arrow)");
+
+      svg.append("foreignObject")
+        .attr("class", "leak-label")
+        .attr("x", 100 + leakNode * 120 - 20)
+        .attr("y", 135)
+        .attr("width", 50)
+        .attr("height", 30)
+        .append("xhtml:div")
+        .style("color", "red")
+        .style("font-size", "14px")
+        .style("text-align", "center")
+        .each(function() {
+          katex.render(`a_{0${leakNode + 1}}`, this, { throwOnError: false });
+        });
+    }
+
+    function updateEquation() {
+      const eqDiv = document.getElementById("equation");
+      const size = +document.getElementById("nodeCount").value;
+      katex.render(eqLookup[size][leakNode], eqDiv, { throwOnError: false });
+    }
+    
+
+    drawLeak();
+    updateEquation();
+  </script>
+</body>
+</html>
