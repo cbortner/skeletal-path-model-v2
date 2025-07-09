@@ -42,8 +42,8 @@
 <body>
   <h2>Skeletal Path Model</h2>
   <label for="nodeCount">Number of Compartments:</label>
-  <input type="range" id="nodeCount" name="nodeCount" min="2" max="4" value="4" oninput="updateModel(this.value)">
-  <span id="nodeCountLabel">4</span>
+  <input type="range" id="nodeCount" name="nodeCount" min="2" max="4" value="2" oninput="updateModel(this.value)">
+  <span id="nodeCountLabel">2</span>
   <p>Click a node to move the leak.</p>
   <div style="width: 100%; overflow-x: auto; display: flex; justify-content: center;">
     <svg width="100%" height="180" viewBox="20 0 560 180" preserveAspectRatio="xMidYMid meet"></svg>
@@ -192,22 +192,24 @@
       .text("in");
 
     // Draw output line with circle
+    // Draw output line with circle dynamically
+    const lastX = 100 + (size - 1) * 120;
     svg.append("line")
-      .attr("x1", 100 + 3 * 120 + 25)
+      .attr("x1", lastX + 25)
       .attr("y1", 75)
-      .attr("x2", 100 + 3 * 120 + 50)
+      .attr("x2", lastX + 50)
       .attr("y2", 50)
       .attr("stroke", "black")
       .attr("stroke-width", 3);
 
     svg.append("circle")
-      .attr("cx", 100 + 3 * 120 + 50)
+      .attr("cx", lastX + 50)
       .attr("cy", 50)
       .attr("r", 5)
       .attr("fill", "black");
 
     svg.append("text")
-      .attr("x", 100 + 3 * 120 + 60)
+      .attr("x", lastX + 60)
       .attr("y", 45)
       .attr("text-anchor", "start")
       .attr("fill", "black")
